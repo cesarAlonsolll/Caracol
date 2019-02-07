@@ -50,3 +50,4 @@ if verificarMatriz(caracol):
     print(recorrerCaracol(caracol))
 else:
     print("Laberinto inadecuado.")
+    
