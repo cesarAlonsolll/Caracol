@@ -3,10 +3,10 @@ nombreArchivo = "TextoCaracol.txt"
 def cargarCaracol(nombre):
     lector = open(nombre,"r")
     laberinto = lector.read().replace(',',' ').split('\n')
-    return tuple([tuple(map(int, linea.split())) for linea in laberinto])
+    return tuple([tuple(linea.split()) for linea in laberinto])
 
 def verificarMatriz(caracol):
-    if len(caracol)>1 and len(caracol)==len(caracol[0]):
+    if len(caracol)>1 and len(caracol[0])>1:
         return True
     return False
 
@@ -16,8 +16,8 @@ def recorrerCaracol(caracol):
         return [direccion[1],-direccion[0]]
     
     def definirCoordenadas(coordenadas, direccion, dimension):
-        return [coordenadas[0]+(direccion[0]*dimension)+definirDireccion(direccion)[0],
-                coordenadas[1]+(direccion[1]*dimension)+definirDireccion(direccion)[1]]
+        return [coordenadas[0]+(direccion[0]*dimension[0])+definirDireccion(direccion)[0],
+                coordenadas[1]+(direccion[1]*dimension[1])+definirDireccion(direccion)[1]]
     
     def recorrer(coordenadas, direccion, cantidad):
         if cantidad>1:
@@ -26,20 +26,23 @@ def recorrerCaracol(caracol):
         else:
             return [caracol[coordenadas[0]][coordenadas[1]]]
     
-    def ciclo2(coordenadas, direccion, dimension):
-        if dimension>0:
-            return recorrer(coordenadas, direccion, dimension)+ciclo1(
-                    definirCoordenadas(coordenadas, direccion, dimension-1),
-                    definirDireccion(direccion), dimension)
+    def vertical(coordenadas, direccion, dimension):
+        if dimension[0]>0:
+            return recorrer(coordenadas, direccion, dimension[0])+horizontal(
+                    definirCoordenadas(coordenadas, direccion, [dimension[0]-1,dimension[1]]),
+                    definirDireccion(direccion), [dimension[0],dimension[1]-1])
         else:
             return []
     
-    def ciclo1(coordenadas, direccion, dimension):
-        return recorrer(coordenadas, direccion, dimension)+ciclo2(
-                definirCoordenadas(coordenadas, direccion, dimension-1),
-                definirDireccion(direccion), dimension-1)
+    def horizontal(coordenadas, direccion, dimension):
+        if dimension[1]>0:
+            return recorrer(coordenadas, direccion, dimension[1])+vertical(
+                    definirCoordenadas(coordenadas, direccion, [dimension[0],dimension[1]-1]),
+                    definirDireccion(direccion), [dimension[0]-1,dimension[1]])
+        else:
+            return []
     
-    return ciclo1([0,0], [0,1], len(caracol))
+    return horizontal([0,0], [0,1], [len(caracol),len(caracol[0])])
 
 caracol = cargarCaracol(nombreArchivo)
 
